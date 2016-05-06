@@ -192,7 +192,7 @@ Por último, cuando la información de un dispositivo ha cambiado, se actualiza 
 
 ```
 #### * Creación del DeviceDetailFragment: <br/>
-Se crea una clase java con el nombre DeviceDetailFragment que será una subclase de Fragment y además implmentará la interfaz ConnectionInfoListener, esto con el objetivo de conocer la información 
+Se crea una clase java con el nombre DeviceDetailFragment que será una subclase de Fragment y además implmentará la interfaz ConnectionInfoListener, esto con el objetivo de conocer la información actual de la conexión establecida
         
 
 
