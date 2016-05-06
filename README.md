@@ -16,10 +16,10 @@ public class Hello {
 ## Guía básica:
 ####- Creación del BroadcastReceiver: <br/>
 Se crea una clase java con el nombre de WiFiDirectBroadcastReceiver que será un subclase de BroadcastReceiver, este componente esta destinado a recibir y responder a los siguientes eventos: <br/>
-*Activación o desactivación de Wi-Fi Direct <br/>
-*La lista de dispositivos(peers) ha cambiado.<br/>
-*El estado de la conectividad Wi-Fi Direct peer-to-peer ha cambiado.<br/>
-*La información del dispositivo ha cambiado.
+* Activación o desactivación de Wi-Fi Direct <br/>
+* La lista de dispositivos(peers) ha cambiado.<br/>
+* El estado de la conectividad Wi-Fi Direct peer-to-peer ha cambiado.<br/>
+* La información del dispositivo ha cambiado.
 Esto se verá ahora con mayor detalle.
 ```java
 import android.content.BroadcastReceiver;
@@ -191,7 +191,7 @@ Por último, cuando la información de un dispositivo ha cambiado, se actualiza 
 }
 
 ```
-#### * Creación del DeviceDetailFragment: <br/>
+#### Creación del DeviceDetailFragment: <br/>
 Se crea una clase java con el nombre DeviceDetailFragment que será una subclase de Fragment y además implmentará la interfaz ConnectionInfoListener, esto con el objetivo de conocer la información actual de la conexión establecida entre dos peers. El fragmento contienen la información detallada de un dispositivo que está vinculado a la red </br>
 La clase tendrá como variables globales:
 ```java
@@ -403,3 +403,97 @@ EN conclusión, el método queda definido así:
         this.getView().setVisibility(View.GONE);
     }
 ```  
+* Ahora dentro de esta clase crearemos la clase ```FileServerAsyncTask``` que como se dijo anteriormente se encarga de crear el server socket asociado al dispositivo servidor.
+```java 
+public static class FileServerAsyncTask extends AsyncTask<Void, Void, String> {
+
+        private Context context;
+        private TextView statusText;
+
+        /**
+         * @param context
+         * @param statusText
+         */
+        public FileServerAsyncTask(Context context, View statusText) {
+            this.context = context;
+            this.statusText = (TextView) statusText;
+        }
+```
+En el método protected ```void onPreExecute()``` simplemente se informa que la tarea asíncrona va a abrir un socket.
+```java 
+   @Override
+        protected void onPreExecute() {
+            statusText.setText("Opening a server socket");
+        }
+```
+
+Como se trata de una tarea asincrona en el método ```protected String doInBackground(Void... params)``` se especifica la tarea que se realizará en segundo plano y que producirá resultados en el hilo principal de la aplicación . En este método se  crea el server socket asociado al dispositivo servidor y con el método ```serverSocket.accept()``` todo el proceso se bloquea hasta que un dispositivo cliente por medio de otro socket pueda establecer conexión con él, luego de que se establece la comunicación por medio de ```client.getInputStream()```  el servidor obtiene la imagen enviada por el cliente y lo que se hace simplemente es crear un ruta en donde se almacenará la imagen.
+```java 
+@Override
+        protected String doInBackground(Void... params) {
+            try {
+                ServerSocket serverSocket = new ServerSocket(8988);
+                Log.d(WiFiDirectActivity.TAG, "Server: Socket opened");
+                Socket client = serverSocket.accept();
+                Log.d(WiFiDirectActivity.TAG, "Server: connection done");
+                final File f = new File(Environment.getExternalStorageDirectory() + "/"
+                        + context.getPackageName() + "/wifip2pshared-" + System.currentTimeMillis()
+                        + ".jpg");
+
+                File dirs = new File(f.getParent());
+                if (!dirs.exists())
+                    dirs.mkdirs();
+                f.createNewFile();
+
+                Log.d(WiFiDirectActivity.TAG, "server: copying files " + f.toString());
+                InputStream inputstream = client.getInputStream();
+                copyFile(inputstream, new FileOutputStream(f));
+                serverSocket.close();
+                return f.getAbsolutePath();
+            } catch (IOException e) {
+                Log.e(WiFiDirectActivity.TAG, e.getMessage());
+                return null;
+            }
+        }
+```
+
+Luego con el método ```protected void onPostExecute(String result)``` se crea un ```Intent``` para que se pueda visualizar la imagen que el dispositivo cliente envió al dispositivo servidor.
+```
+ @Override
+        protected void onPostExecute(String result) {
+            if (result != null) {
+                statusText.setText("File copied - " + result);
+                Intent intent = new Intent();
+                intent.setAction(android.content.Intent.ACTION_VIEW);
+                intent.setDataAndType(Uri.parse("file://" + result), "image/*");
+                context.startActivity(intent);
+            }
+
+        }
+  }
+```
+* Por último se define el método ```public static boolean copyFile(InputStream inputStream, OutputStream out)``` fuera de la clase ```FileServerAsyncTask ``` este método simplemente lee el ```inputStream``` y copia la fila al ```out```.
+```java
+public static boolean copyFile(InputStream inputStream, OutputStream out) {
+        byte buf[] = new byte[1024];
+        int len;
+        try {
+            while ((len = inputStream.read(buf)) != -1) {
+                out.write(buf, 0, len);
+
+            }
+            out.close();
+            inputStream.close();
+        } catch (IOException e) {
+            Log.d(WiFiDirectActivity.TAG, e.toString());
+            return false;
+        }
+        return true;
+    }
+
+}
+```
+
+
+
+
