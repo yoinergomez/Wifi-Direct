@@ -260,9 +260,9 @@ mContentView.findViewById(R.id.btn_connect).setOnClickListener(new View.OnClickL
         });
 ```
 En caso del botón **Disconnect** solo se invoca al método ```disconnect()``` que es implementado en la actividad principal.
+```java
 mContentView.findViewById(R.id.btn_disconnect).setOnClickListener(
                 new View.OnClickListener() {
-```java
                     @Override
                     public void onClick(View v) {
                         ((DeviceActionListener) getActivity()).disconnect();
@@ -284,7 +284,7 @@ mContentView.findViewById(R.id.btn_start_client).setOnClickListener(
                 });
 ```
 
-EN conclusión, el método queda definido así:
+En conclusión, el método queda definido así:
 ```java
  @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -522,7 +522,90 @@ public static boolean copyFile(InputStream inputStream, OutputStream out) {
 
 }
 ```
+**Creación del DeviceListFragment:** <br/>
+Se crea una clase java llamada DeviceListFragment que será un subclase de ```ListFragment``` y además implementa la interfaz ```PeerListListener```, esto se hace para capturar el evento asociado a cuando la lista de peers esta disponible, esto significa que la clase será un ```ListFragment``` que contendrá la lista de peers disponibles que se han descubierto en la red.</br>
+``` java
+import android.app.ListFragment;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.net.wifi.p2p.WifiP2pConfig;
+import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pDeviceList;
+import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * A ListFragment that displays available peers on discovery and requests the
+ * parent activity to handle user interaction events
+ */
+public class DeviceListFragment extends ListFragment implements PeerListListener {
+
+    private List<WifiP2pDevice> peers = new ArrayList<WifiP2pDevice>();
+    ProgressDialog progressDialog = null;
+    View mContentView = null;
+    private WifiP2pDevice device;
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        this.setListAdapter(new WiFiPeerListAdapter(getActivity(), R.layout.row_devices, peers));
+
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mContentView = inflater.inflate(R.layout.device_list, null);
+        return mContentView;
+    }
+
+    /**
+     * @return this device
+     */
+    public WifiP2pDevice getDevice() {
+        return device;
+    }
+```
+
+* El método ```private static String getDeviceStatus(int deviceStatus)``` es bastante sencillo ya que solo traduce las contantes de la clase ```WifiP2pDevice``` que se refieren al estado de un dispositivo a un string que es él que se muestra en la interfaz gráfica.
+```java  
+ private static String getDeviceStatus(int deviceStatus) {
+        Log.d(WiFiDirectActivity.TAG, "Peer status :" + deviceStatus);
+        switch (deviceStatus) {
+            case WifiP2pDevice.AVAILABLE:
+                return "Available";
+            case WifiP2pDevice.INVITED:
+                return "Invited";
+            case WifiP2pDevice.CONNECTED:
+                return "Connected";
+            case WifiP2pDevice.FAILED:
+                return "Failed";
+            case WifiP2pDevice.UNAVAILABLE:
+                return "Unavailable";
+            default:
+                return "Unknown";
+
+        }
+    }
+```
+* Se sobreescribe el método ```public void onListItemClick(ListView l, View v, int position, long id)``` que provee la clase ```ListFragment```, este metodo se ejecuta cuando se selecciona un dispositivo de la lista de peers disponibles, cuando eso sucede se inicaliza la conexión entre el dispositivo del usuario y el dispositivo que escogió.
+
+```java
+@Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        WifiP2pDevice device = (WifiP2pDevice) getListAdapter().getItem(position);
+        ((DeviceActionListener) getActivity()).showDetails(device);
+    }
+```
 
 
