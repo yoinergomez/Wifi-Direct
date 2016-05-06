@@ -607,5 +607,47 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
         ((DeviceActionListener) getActivity()).showDetails(device);
     }
 ```
+* Luego se crea una clase privada  ```WiFiPeerListAdapter```  que tiene la responsabilidad de 
+```java
+ private class WiFiPeerListAdapter extends ArrayAdapter<WifiP2pDevice> {
 
+        private List<WifiP2pDevice> items;
+
+        /**
+         * @param context
+         * @param textViewResourceId
+         * @param objects
+         */
+        public WiFiPeerListAdapter(Context context, int textViewResourceId,
+                List<WifiP2pDevice> objects) {
+            super(context, textViewResourceId, objects);
+            items = objects;
+
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View v = convertView;
+            if (v == null) {
+                LayoutInflater vi = (LayoutInflater) getActivity().getSystemService(
+                        Context.LAYOUT_INFLATER_SERVICE);
+                v = vi.inflate(R.layout.row_devices, null);
+            }
+            WifiP2pDevice device = items.get(position);
+            if (device != null) {
+                TextView top = (TextView) v.findViewById(R.id.device_name);
+                TextView bottom = (TextView) v.findViewById(R.id.device_details);
+                if (top != null) {
+                    top.setText(device.deviceName);
+                }
+                if (bottom != null) {
+                    bottom.setText(getDeviceStatus(device.status));
+                }
+            }
+
+            return v;
+
+        }
+    }
+```
 
