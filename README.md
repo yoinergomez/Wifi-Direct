@@ -118,9 +118,27 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
 ```
 Se puede observar que la clase dispone de tres atributos:<br/>
-**WifiP2pManager manager:** Es la encargada de gestionar la conectividad de Wi-Fi Direct peer-to-peer, esto significa que tiene como responsabilidades: Encontrar los dispositivos disponibles para un conexión y configurar la conexión especifica a un peer.<br/>
-**Channel channel:**Es el conducto que permite establecer la comunicación por medio de un servicio I/O, para este caso se utilizará un socket para dicha conexión.<br/>
-**WiFiDirectActivity activity:** Es la referencia a la actividad principal de la app, esto se hace con el objetivo de actualizar la actividad principal dependiendo las acciones que realice el BroadcastReceiver.<br/>
+```WifiP2pManager manager:``` Es la encargada de gestionar la conectividad de Wi-Fi Direct peer-to-peer, esto significa que tiene como responsabilidades: Encontrar los dispositivos disponibles para un conexión y configurar la conexión especifica a un peer.<br/>
+```Channel channel:```Es el conducto que permite establecer la comunicación por medio de un servicio I/O, para este caso se utilizará un socket para dicha conexión.<br/>
+```WiFiDirectActivity activity:``` Es la referencia a la actividad principal de la app, esto se hace con el objetivo de actualizar la actividad principal dependiendo las acciones que realice el BroadcastReceiver.<br/>
+
+El método ```onReceive(Context context, Intent intent)``` captuta la acción asociada al intento que invocó el BroadcastReceiver.<br/>
+Cuando se genera el evento Activación o desactivación de Wi-Fi Direct simplemente se actualiza ese estado a la atividada principal. <br/>
+```java
+if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
+
+            // UI update to indicate wifi p2p status.
+            int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
+            if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
+                // Wifi Direct mode is enabled
+                activity.setIsWifiP2pEnabled(true);
+            } else {
+                activity.setIsWifiP2pEnabled(false);
+                activity.resetData();
+
+            }
+            Log.d(WiFiDirectActivity.TAG, "P2P state changed - " + state);
+```
 
 
 
