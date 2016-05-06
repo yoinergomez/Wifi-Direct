@@ -202,8 +202,8 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
     private WifiP2pInfo info;
     ProgressDialog progressDialog = null;
 ```
-Se deben sobrescribir algunos métodos ofrecidos por la clase Fragment.<br/>
-El método ```public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)``` además de crear la vista del ```Fragment``` se encarga de capturar los ```onClickListener``` asociados a las botones **Connect, Disconnect y Launch Gallery**
+Se deben sobrescribir algunos métodos ofrecidos por la clase Fragment: .<br/>
+* El método ```public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)``` además de crear la vista del ```Fragment``` se encarga de capturar los ```onClickListener``` asociados a las botones **Connect, Disconnect y Launch Gallery**
 En el caso del botón **Connect** se ajusta la configuración de Wi-Fi Direct especificando la dirección de mi dispositivo y la dirección del dispositivo al que me quiero conectar, luego de esto se tratan de conectar los peers en cuestión.
 ```java
 mContentView.findViewById(R.id.btn_connect).setOnClickListener(new View.OnClickListener() {
@@ -254,3 +254,83 @@ mContentView.findViewById(R.id.btn_start_client).setOnClickListener(
                     }
                 });
 ```
+
+EN conclusión, el método queda definido así:
+```java
+ @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        mContentView = inflater.inflate(R.layout.device_detail, null);
+        mContentView.findViewById(R.id.btn_connect).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                WifiP2pConfig config = new WifiP2pConfig();
+                config.deviceAddress = device.deviceAddress;
+                config.wps.setup = WpsInfo.PBC;
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+                progressDialog = ProgressDialog.show(getActivity(), "Press back to cancel",
+                        "Connecting to :" + device.deviceAddress, true, true
+//                        new DialogInterface.OnCancelListener() {
+//
+//                            @Override
+//                            public void onCancel(DialogInterface dialog) {
+//                                ((DeviceActionListener) getActivity()).cancelDisconnect();
+//                            }
+//                        }
+                        );
+                ((DeviceActionListener) getActivity()).connect(config);
+
+            }
+        });
+
+        mContentView.findViewById(R.id.btn_disconnect).setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        ((DeviceActionListener) getActivity()).disconnect();
+                    }
+                });
+
+        mContentView.findViewById(R.id.btn_start_client).setOnClickListener(
+                new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        // Allow user to pick an image from Gallery or other
+                        // registered apps
+                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                        intent.setType("image/*");
+                        startActivityForResult(intent, CHOOSE_FILE_RESULT_CODE);
+                    }
+                });
+
+        return mContentView;
+    }
+```
+
+* El método ```public void onActivityResult(int requestCode, int resultCode, Intent data)``` se utiliza para recebir el resultado de seleccionar una imagen de la galeria,el método se encarga de obetener la ```Uri``` de la imagen seleccionada y crear un ```Intent```, donde se envia la Uri de la imagen, la dirección y el puerto del servidor para iniciar el servicio llamado ```FileTransferService``` que se ocupa solamente de transferir la información del dispositivo cliente al dispositivo servidor.
+```java
+@Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        // User has picked an image. Transfer it to group owner i.e peer using
+        // FileTransferService.
+        Uri uri = data.getData();
+        TextView statusText = (TextView) mContentView.findViewById(R.id.status_text);
+        statusText.setText("Sending: " + uri);
+        Log.d(WiFiDirectActivity.TAG, "Intent----------- " + uri);
+        Intent serviceIntent = new Intent(getActivity(), FileTransferService.class);
+        serviceIntent.setAction(FileTransferService.ACTION_SEND_FILE);
+        serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, uri.toString());
+        serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_ADDRESS,
+                info.groupOwnerAddress.getHostAddress());
+        serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988);
+        getActivity().startService(serviceIntent);
+    }`
+    ```
+    
+    
