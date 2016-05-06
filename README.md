@@ -117,8 +117,11 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 }
 
 ```
-Se puede observar que la clase disponde de tres atributos:<br/>
-WifiP2pManager manager= Es la encargada de gestionar la conectividad de Wi-Fi Direct peer-to-peer, esto significa que tiene como responsabilidades: Encontrar los dispositivos disponibles para un conexión y configurar la conexión especifica a un peer.<br/>
+Se puede observar que la clase dispone de tres atributos:<br/>
+**WifiP2pManager manager:** Es la encargada de gestionar la conectividad de Wi-Fi Direct peer-to-peer, esto significa que tiene como responsabilidades: Encontrar los dispositivos disponibles para un conexión y configurar la conexión especifica a un peer.<br/>
+**Channel channel:**Es el conducto que permite establecer la comunicación por medio de un servicio I/O, para este caso se utilizará un socket para dicha conexión.<br/>
+**WiFiDirectActivity activity:** Es la referencia a la actividad principal de la app, esto se hace con el objetivo de actualizar la actividad principal dependiendo las acciones que realice el BroadcastReceiver.<br/>
+
 
 
 
