@@ -335,6 +335,71 @@ EN conclusión, el método queda definido así:
   
   Ahora, se implementa el método ofrecido por la interfaz ```ConnectionInfoListener```: <br/>
   * El método ```public void onConnectionInfoAvailable(final WifiP2pInfo info)```  permite por medio del objeto ```WifiP2pInfo info``` conocer cual peer es el dispotivo cliente y cual es el dispositivo servidor , de acuerdo a esto si se trata del dispositivo servidor se llama a la clase ```FileServerAsyncTask``` que crea el server socket y en caso de ser un dispositivo cliente se habilita el botón **Launch Galery** para que el cliente pueda seleccionar la imagen.
-  
+```java 
+@Override
+    public void onConnectionInfoAvailable(final WifiP2pInfo info) {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+        this.info = info;
+        this.getView().setVisibility(View.VISIBLE);
+
+        // The owner IP is now known.
+        TextView view = (TextView) mContentView.findViewById(R.id.group_owner);
+        view.setText(getResources().getString(R.string.group_owner_text)
+                + ((info.isGroupOwner == true) ? getResources().getString(R.string.yes)
+                        : getResources().getString(R.string.no)));
+
+        // InetAddress from WifiP2pInfo struct.
+        view = (TextView) mContentView.findViewById(R.id.device_info);
+        view.setText("Group Owner IP - " + info.groupOwnerAddress.getHostAddress());
+
+        // After the group negotiation, we assign the group owner as the file
+        // server. The file server is single threaded, single connection server
+        // socket.
+        if (info.groupFormed && info.isGroupOwner) {
+            new FileServerAsyncTask(getActivity(), mContentView.findViewById(R.id.status_text))
+                    .execute();
+        } else if (info.groupFormed) {
+            // The other device acts as the client. In this case, we enable the
+            // get file button.
+            mContentView.findViewById(R.id.btn_start_client).setVisibility(View.VISIBLE);
+            ((TextView) mContentView.findViewById(R.id.status_text)).setText(getResources()
+                    .getString(R.string.client_text));
+        }
+
+        // hide the connect button
+        mContentView.findViewById(R.id.btn_connect).setVisibility(View.GONE);
+    }
     
-    
+```
+
+* El método ```public void showDetails(WifiP2pDevice device) ``` actualiza el Fragment con la información dada por el objeto ```WifiP2pDevice device```.
+``` java
+   public void showDetails(WifiP2pDevice device) {
+        this.device = device;
+        this.getView().setVisibility(View.VISIBLE);
+        TextView view = (TextView) mContentView.findViewById(R.id.device_address);
+        view.setText(device.deviceAddress);
+        view = (TextView) mContentView.findViewById(R.id.device_info);
+        view.setText(device.toString());
+
+    }
+``` 
+
+* El método ```public void resetViews()``` limpia el Fragment
+```java 
+    public void resetViews() {
+        mContentView.findViewById(R.id.btn_connect).setVisibility(View.VISIBLE);
+        TextView view = (TextView) mContentView.findViewById(R.id.device_address);
+        view.setText(R.string.empty);
+        view = (TextView) mContentView.findViewById(R.id.device_info);
+        view.setText(R.string.empty);
+        view = (TextView) mContentView.findViewById(R.id.group_owner);
+        view.setText(R.string.empty);
+        view = (TextView) mContentView.findViewById(R.id.status_text);
+        view.setText(R.string.empty);
+        mContentView.findViewById(R.id.btn_start_client).setVisibility(View.GONE);
+        this.getView().setVisibility(View.GONE);
+    }
+```  
