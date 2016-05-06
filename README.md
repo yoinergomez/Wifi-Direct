@@ -13,8 +13,14 @@ public class Hello {
   }
 }
 ```
+<br/><br/>
+## Objetivo:
+Crear una aplicaciòn android que permita enviar una imagen por medio de Wifi-Direct
+<br/>
+-Crear un nuevo proyecto ***vacio*** android con el nombre **Wifi-Direct**
+
 ## Guía básica:
-#### 2) Creación del BroadcastReceiver: <br/>
+#### - Creación del BroadcastReceiver: <br/>
 Se crea una clase java con el nombre de WiFiDirectBroadcastReceiver que será un subclase de BroadcastReceiver, este componente esta destinado a recibir y responder a los siguientes eventos: <br/>
 *Activación o desactivación de Wi-Fi Direct <br/>
 *La lista de dispositivos(peers) ha cambiado.<br/>
