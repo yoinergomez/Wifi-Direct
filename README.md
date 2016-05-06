@@ -192,8 +192,41 @@ Por último, cuando la información de un dispositivo ha cambiado, se actualiza 
 
 ```
 #### * Creación del DeviceDetailFragment: <br/>
-Se crea una clase java con el nombre DeviceDetailFragment que será una subclase de Fragment y además implmentará la interfaz ConnectionInfoListener, esto con el objetivo de conocer la información actual de la conexión establecida
-        
+Se crea una clase java con el nombre DeviceDetailFragment que será una subclase de Fragment y además implmentará la interfaz ConnectionInfoListener, esto con el objetivo de conocer la información actual de la conexión establecida entre dos peers. El fragmento contienen la información detallada de un dispositivo que está vinculado a la red </br>
+La clase tendrá como variables globales:
+```java
+public class DeviceDetailFragment extends Fragment implements ConnectionInfoListener {
+    protected static final int CHOOSE_FILE_RESULT_CODE = 20;
+    private View mContentView = null;
+    private WifiP2pDevice device;
+    private WifiP2pInfo info;
+    ProgressDialog progressDialog = null;
+```
+Se deben sobrescribir algunos métodos ofrecidos por la clase Fragment.<br/>
+El método ```public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)``` además de crear la vista del ```Fragment``` se encarga de capturar los ```onClickListener``` asociados a las botones **Connect, Disconnect y Launch Gallery**
+En el caso del botón **Connect** se ajusta la configuración de Wi-Fi Direct especificando la dirección de mi dispositivo y la dirección del dispositivo al que me quiero conectar, luego de esto se tratan de conectar los peers en cuestión.
+```java
+mContentView.findViewById(R.id.btn_connect).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WifiP2pConfig config = new WifiP2pConfig();
+                config.deviceAddress = device.deviceAddress;
+                config.wps.setup = WpsInfo.PBC;
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+                progressDialog = ProgressDialog.show(getActivity(), "Press back to cancel",
+                        "Connecting to :" + device.deviceAddress, true, true
+//                        new DialogInterface.OnCancelListener() {
+//
+//                            @Override
+//                            public void onCancel(DialogInterface dialog) {
+//                                ((DeviceActionListener) getActivity()).cancelDisconnect();
+//                            }
+//                        }
+                        );
+                ((DeviceActionListener) getActivity()).connect(config);
 
-
-
+            }
+        });
+```
