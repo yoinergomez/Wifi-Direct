@@ -230,3 +230,27 @@ mContentView.findViewById(R.id.btn_connect).setOnClickListener(new View.OnClickL
             }
         });
 ```
+En caso del botón **Disconnect** solo se invoca al método ```disconnect()``` que es implementado en la actividad principal.
+mContentView.findViewById(R.id.btn_disconnect).setOnClickListener(
+                new View.OnClickListener() {
+```java
+                    @Override
+                    public void onClick(View v) {
+                        ((DeviceActionListener) getActivity()).disconnect();
+                    }
+                });
+```
+En caso del botón **Launch Gallery** se crea un Intent para acceder a la galeria y escoger la imagen que será transferida a otro dispositivo.
+```java
+mContentView.findViewById(R.id.btn_start_client).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Allow user to pick an image from Gallery or other
+                        // registered apps
+                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                        intent.setType("image/*");
+                        startActivityForResult(intent, CHOOSE_FILE_RESULT_CODE);
+                    }
+                });
+```
