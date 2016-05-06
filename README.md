@@ -331,7 +331,8 @@ EN conclusión, el método queda definido así:
         serviceIntent.putExtra(FileTransferService.EXTRAS_GROUP_OWNER_PORT, 8988);
         getActivity().startService(serviceIntent);
     }
-    ```
+  ```
+  
   Ahora, se implementa el método ofrecido por la interfaz ```ConnectionInfoListener```: <br/>
   * El método ```public void onConnectionInfoAvailable(final WifiP2pInfo info)```  permite por medio del objeto ```WifiP2pInfo info``` conocer cual peer es el dispotivo cliente y cual es el dispositivo servidor , de acuerdo a esto si se trata del dispositivo servidor se llama a la clase ```FileServerAsyncTask``` que crea el server socket y en caso de ser un dispositivo cliente se habilita el botón **Launch Galery** para que el cliente pueda seleccionar la imagen.
   
