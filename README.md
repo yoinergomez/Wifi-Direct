@@ -903,10 +903,9 @@ Sin embargo, cuando la actividad se pausa en el ```public void onPause()``` el B
         return true;
     }
   ```
-  
-  
-  
-  
+* El método ```public boolean onOptionsItemSelected(MenuItem item) ``` se ejecuta cuando se selecciona una opción del menú:
+* Cuando se escoje la opción  **Settings**, solamente se llama a la **configuración de Conexiones inalambricas y redes** que tiene por defecto el sistema, para que el usuario pueda activar Wi-FI Direct.</br>
+* Cuando se escije la opción **Buscar** se verifica que Wi-FI Direct este activado, en tal caso  se utiliza el objeto ```WifiP2pManager manager``` para encontrar los peers disponibles en dicho momento.
   
 ```java  
   @Override
