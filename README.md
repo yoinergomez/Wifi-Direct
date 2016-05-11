@@ -148,7 +148,7 @@ mContentView.findViewById(R.id.btn_start_client).setOnClickListener(
                 });
 ```
 
-En conclusión, el método queda definido así:
+En conclusión, el método ```onCreateView``` queda definido así:
 ```java
  @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -166,13 +166,6 @@ En conclusión, el método queda definido así:
                 }
                 progressDialog = ProgressDialog.show(getActivity(), "Press back to cancel",
                         "Connecting to :" + device.deviceAddress, true, true
-//                        new DialogInterface.OnCancelListener() {
-//
-//                            @Override
-//                            public void onCancel(DialogInterface dialog) {
-//                                ((DeviceActionListener) getActivity()).cancelDisconnect();
-//                            }
-//                        }
                         );
                 ((DeviceActionListener) getActivity()).connect(config);
 
@@ -223,7 +216,9 @@ En conclusión, el método queda definido así:
         getActivity().startService(serviceIntent);
     }
   ```
-  * En este punto se necesita crear una nueva clase java llamada ```FileTransferService``` que es utilizada para transferir la imagen desde el dispositivo cliente al dispositivo servidor. Para ello, se obtiene el ``` Intent```  por él cual se inicio el servicio, de dicho ``` Intent```  se extrae la ``` Uri```  que contiene la ruta de la imagen, la dirección IP y el puerto del dispositivo servidor para crear el ``` Socket```  asociado el dispositivo cliente , por medio de este se establece la conexión al servidor,se copia la imagen y se manda gracias al ```OutpuStream```.
+
+#### Creación del FileTransferService: <br/>
+  * En este punto se necesita crear una nueva clase de java llamada ```FileTransferService``` que es utilizada para transferir la imagen desde el dispositivo cliente al dispositivo servidor. Para ello, se obtiene el ``` Intent```  por él cual se inicio el servicio, de dicho ``` Intent```  se extrae la ``` Uri```  que contiene la ruta de la imagen, la dirección IP y el puerto del dispositivo servidor para crear el ``` Socket```  asociado el dispositivo cliente , por medio de este se establece la conexión al servidor,se copia la imagen y se manda gracias al ```OutpuStream```.
 ```java
 import android.app.IntentService;
 import android.content.ContentResolver;
@@ -255,10 +250,6 @@ public class FileTransferService extends IntentService {
         super("FileTransferService");
     }
 
-    /*
-     * (non-Javadoc)
-     * @see android.app.IntentService#onHandleIntent(android.content.Intent)
-     */
     @Override
     protected void onHandleIntent(Intent intent) {
 
@@ -376,10 +367,6 @@ public static class FileServerAsyncTask extends AsyncTask<Void, Void, String> {
         private Context context;
         private TextView statusText;
 
-        /**
-         * @param context
-         * @param statusText
-         */
         public FileServerAsyncTask(Context context, View statusText) {
             this.context = context;
             this.statusText = (TextView) statusText;
