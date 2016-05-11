@@ -27,6 +27,8 @@ Se crea una clase java con el nombre de **WiFiDirectBroadcastReceiver** que ser�
 * El estado de la conectividad Wi-Fi Direct peer-to-peer ha cambiado.<br/>
 * La información del dispositivo ha cambiado.
 Esto se verá ahora con mayor detalle.
+<br/><br/>
+Se agregan las siguientes importaciones a dicha clase:
 ```java
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -60,11 +62,6 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
         this.activity = activity;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see android.content.BroadcastReceiver#onReceive(android.content.Context,
-     * android.content.Intent)
-     */
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
