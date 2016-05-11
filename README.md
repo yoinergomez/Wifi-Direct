@@ -502,29 +502,6 @@ public void clearPeers() {
 Ya para concluir, [se crea la actividad](https://github.com/yoinergomez/Wifi-Direct/blob/master/src/com/example/android/wifidirect/WiFiDirectActivity.java) principal que en general usa Wi-Fi Direct para descubir, conectar y transferir imagenes con dispositivos disponibles en la red.<br/>
 Inicalmente de declaran las variables globales.Después con el método ```public void setIsWifiP2pEnabled(boolean isWifiP2pEnabled)``` se modifica el estado del Wi-FI por medio del ```WiFiDirectBroadcastReceiver``` además en el ```public void onCreate(Bundle savedInstanceState)``` se definen los tipos de intentos asociados a Wi-Fi Direct , que ya se han explicado previamente y se inicializa el objeto ```WifiP2pManager manager``` responsable de la gestión de la conectividad de Wi-Fi Direct.
 ```java
-import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.wifi.p2p.WifiP2pConfig;
-import android.net.wifi.p2p.WifiP2pDevice;
-import android.net.wifi.p2p.WifiP2pManager;
-import android.net.wifi.p2p.WifiP2pManager.ActionListener;
-import android.net.wifi.p2p.WifiP2pManager.Channel;
-import android.net.wifi.p2p.WifiP2pManager.ChannelListener;
-import android.os.Bundle;
-import android.provider.Settings;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
-
-import com.example.android.wifidirect.DeviceListFragment.DeviceActionListener;
-
-
  
 public class WiFiDirectActivity extends Activity implements ChannelListener, DeviceActionListener {
 
