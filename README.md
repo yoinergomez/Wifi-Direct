@@ -18,7 +18,7 @@ public class Hello {
 Crear una aplicación android que permita enviar una imagen por medio de Wifi-Direct
 <br/><br/>
 ###### Configuraciones iniciales:
-* Crear un nuevo proyecto android con el nombre **Wifi-Direct**, SDK mínimo **API 16** y con el tipo de **actividad vacía** con nombre **WiFiDirectActivity** y el nombre del layout **activity_wi_fi_direct** <br/><br/>
+* Crear un nuevo proyecto android con el nombre ```Wifi-Direct```, SDK mínimo ```API 16``` y con el tipo de ```actividad vacía``` con nombre ```WiFiDirectActivity``` y el nombre del layout ```activity_wi_fi_direct``` <br/><br/>
 
 ###### Creación del BroadcastReceiver: <br/>
 [Se crea una clase java](https://github.com/yoinergomez/Wifi-Direct/blob/master/src/com/example/android/wifidirect/WiFiDirectBroadcastReceiver.java) con el nombre de **WiFiDirectBroadcastReceiver** que será un subclase de BroadcastReceiver, este componente esta destinado a recibir y responder a los siguientes eventos: <br/>
@@ -93,7 +93,7 @@ Por último, cuando la información de un dispositivo ha cambiado, se actualiza 
 
 ```
 #### Creación del DeviceDetailFragment: <br/>
-Se crea una clase java con el nombre DeviceDetailFragment que será una subclase de Fragment y además implmentará la interfaz ```ConnectionInfoListener```, esto con el objetivo de conocer la información actual de la conexión establecida entre dos peers. El fragmento contiene la información detallada de un dispositivo que está vinculado a la red </br>
+Se crea una clase java con el nombre ```DeviceDetailFragment``` que será una subclase de ```Fragment``` y además implementará la interfaz ```ConnectionInfoListener```, esto con el objetivo de conocer la información actual de la conexión establecida entre dos peers. El fragmento contiene la información detallada de un dispositivo que está vinculado a la red </br>
 La clase tendrá como variables globales:
 ```java
 import android.app.Fragment;
