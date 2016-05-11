@@ -359,59 +359,8 @@ public static boolean copyFile(InputStream inputStream, OutputStream out) {
 }
 ```
 **Creación del DeviceListFragment:** <br/>
-Se crea una clase java llamada DeviceListFragment que será un subclase de ```ListFragment``` y además implementa la interfaz ```PeerListListener```, esto se hace para capturar el evento asociado a cuando la lista de peers esta disponible, esto significa que la clase será un ```ListFragment``` que contendrá la lista de peers disponibles que se han descubierto en la red.</br>
-``` java
-import android.app.ListFragment;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.net.wifi.p2p.WifiP2pConfig;
-import android.net.wifi.p2p.WifiP2pDevice;
-import android.net.wifi.p2p.WifiP2pDeviceList;
-import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
+[Se crea una clase java](https://github.com/yoinergomez/Wifi-Direct/blob/master/src/com/example/android/wifidirect/DeviceListFragment.java) llamada DeviceListFragment que será un subclase de ```ListFragment``` y además implementa la interfaz ```PeerListListener```, esto se hace para capturar el evento asociado a cuando la lista de peers esta disponible, esto significa que la clase será un ```ListFragment``` que contendrá la lista de peers disponibles que se han descubierto en la red.</br>
 
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * A ListFragment that displays available peers on discovery and requests the
- * parent activity to handle user interaction events
- */
-public class DeviceListFragment extends ListFragment implements PeerListListener {
-
-    private List<WifiP2pDevice> peers = new ArrayList<WifiP2pDevice>();
-    ProgressDialog progressDialog = null;
-    View mContentView = null;
-    private WifiP2pDevice device;
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        this.setListAdapter(new WiFiPeerListAdapter(getActivity(), R.layout.row_devices, peers));
-
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mContentView = inflater.inflate(R.layout.device_list, null);
-        return mContentView;
-    }
-
-    /**
-     * @return this device
-     */
-    public WifiP2pDevice getDevice() {
-        return device;
-    }
-```
 
 * El método ```private static String getDeviceStatus(int deviceStatus)``` es bastante sencillo ya que solo traduce las contantes de la clase ```WifiP2pDevice``` que se refieren al estado de un dispositivo a un string que es él que se muestra en la interfaz gráfica.
 ```java  
@@ -541,13 +490,9 @@ public void clearPeers() {
 * Por último , se declara la interfaz ```DeviceActionListener``` que será de utilidad para la actividad principal, debido a que permite escuchar eventos asociados a un fragmento especifico del ```ListFragment```.
 ```java
   public interface DeviceActionListener {
-
         void showDetails(WifiP2pDevice device);
-
         void cancelDisconnect();
-
         void connect(WifiP2pConfig config);
-
         void disconnect();
     }
 
