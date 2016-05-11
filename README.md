@@ -18,7 +18,7 @@ public class Hello {
 Crear una aplicación android que permita enviar una imagen por medio de Wifi-Direct
 <br/><br/>
 ###### Configuraciones iniciales:
-* Crear un nuevo proyecto android con el nombre **Wifi-Direct**, SDK mínimo **API 16** y con el tipo de **actividad vacía** con nombre **WiFiDirectActivity** <br/><br/>
+* Crear un nuevo proyecto android con el nombre **Wifi-Direct**, SDK mínimo **API 16** y con el tipo de **actividad vacía** con nombre **WiFiDirectActivity** y el nombre del layout **activity_wi_fi_direct** <br/><br/>
 
 ###### Creación del BroadcastReceiver: <br/>
 Se crea una clase java con el nombre de **WiFiDirectBroadcastReceiver** que será un subclase de BroadcastReceiver, este componente esta destinado a recibir y responder a los siguientes eventos: <br/>
@@ -145,7 +145,7 @@ Cuando la lista de dispositivos(peers) disponibles ha cambiado, se actualiza el 
             Log.d(WiFiDirectActivity.TAG, "P2P peers changed");
   }
 ```
-Cuando el estado de la conectividad del Wi-Fi Direct ha cambiado, se obtiene la información actual de la conexión con la red, en caso de estar conectado el dispositivo puede establecer conexión con algún peer disponible para transferir información,si esto no ocurre el dispositivo no tendrá peers disponibles.
+Cuando el estado de la conectividad del Wi-Fi Direct ha cambiado, se obtiene la información actual de la conexión con la red, en caso de estar conectado el dispositivo puede establecer conexión con algún peer disponible para transferir información, si esto no ocurre el dispositivo no tendrá peers disponibles.
 ```java
    else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
 
