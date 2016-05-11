@@ -607,7 +607,7 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
         ((DeviceActionListener) getActivity()).showDetails(device);
     }
 ```
-* Luego se crea una clase privada  ```WiFiPeerListAdapter```  que tiene la responsabilidad de 
+* Luego se crea una clase privada  ```WiFiPeerListAdapter```  que tiene la responsabilidad de mantener la lista de ```WifiP2pDevice```
 ```java
  private class WiFiPeerListAdapter extends ArrayAdapter<WifiP2pDevice> {
 
@@ -651,3 +651,69 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
     }
 ```
 
+* Luego afuera de la clase ```WiFiPeerListAdapter``` y dentro de la clase ```DeviceListFragment``` se define el método ```public void updateThisDevice(WifiP2pDevice device)``` que actualiza la información del dispositivo que esta manejando el usuario.
+```java
+public void updateThisDevice(WifiP2pDevice device) {
+        this.device = device;
+        TextView view = (TextView) mContentView.findViewById(R.id.my_name);
+        view.setText(device.deviceName);
+        view = (TextView) mContentView.findViewById(R.id.my_status);
+        view.setText(getDeviceStatus(device.status));
+    }
+```
+* El método ```public void onPeersAvailable(WifiP2pDeviceList peerList) ``` refresca la lista de peers disponibles luego de que se buscaron dispositivos en la red.
+```java
+@Override
+    public void onPeersAvailable(WifiP2pDeviceList peerList) {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+        peers.clear();
+        peers.addAll(peerList.getDeviceList());
+        ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
+        if (peers.size() == 0) {
+            Log.d(WiFiDirectActivity.TAG, "No devices found");
+            return;
+        }
+
+    }
+```
+*Los métodos ```public void clearPeers()``` y ```public void onInitiateDiscovery``` estan delegados para limpiar la lista de peers disponibles y para mantener activo el  ```progressDialog``` mientras se esta realizando una búsqueda de peers en la red respectivamente.
+```java
+public void clearPeers() {
+        peers.clear();
+        ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
+    }
+
+    /**
+     * 
+     */
+    public void onInitiateDiscovery() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+        progressDialog = ProgressDialog.show(getActivity(), "Press back to cancel", "finding peers", true,
+                true, new DialogInterface.OnCancelListener() {
+
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        
+                    }
+                });
+    }
+```
+* Por último , se declara la interfaz ```DeviceActionListener``` que será de utilidad para la actividad principal, debido a que permite escuchar eventos asociados a un fragmento especifico del ```ListFragment```.
+```java
+  public interface DeviceActionListener {
+
+        void showDetails(WifiP2pDevice device);
+
+        void cancelDisconnect();
+
+        void connect(WifiP2pConfig config);
+
+        void disconnect();
+    }
+
+}
+```
