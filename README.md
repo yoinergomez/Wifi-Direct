@@ -208,7 +208,7 @@ En conclusión, el método ```onCreateView``` queda definido así:
 ) llamada ```FileTransferService``` que es utilizada para transferir la imagen desde el dispositivo cliente al dispositivo servidor. Para ello, se obtiene el ``` Intent```  por él cual se inicio el servicio, de dicho ``` Intent```  se extrae la ``` Uri```  que contiene la ruta de la imagen, la dirección IP y el puerto del dispositivo servidor para crear el ``` Socket```  asociado el dispositivo cliente , por medio de este se establece la conexión al servidor,se copia la imagen y se manda gracias al ```OutpuStream```.
 
   
-  Ahora,volvemos a la clase ```DeviceDetailFragment```y se implementa el método ofrecido por la interfaz ```ConnectionInfoListener```: <br/>
+  ***Ahora,volvemos a la clase DeviceDetailFragment*** y se implementa el método ofrecido por la interfaz ```ConnectionInfoListener```: <br/>
   * El método ```public void onConnectionInfoAvailable(final WifiP2pInfo info)```  permite por medio del objeto ```WifiP2pInfo info``` conocer cual peer es el dispotivo cliente y cual es el dispositivo servidor , de acuerdo a esto si se trata del dispositivo servidor se llama a la clase ```FileServerAsyncTask``` que crea el server socket y en caso de ser un dispositivo cliente se habilita el botón **Launch Galery** para que el cliente pueda seleccionar la imagen.
 ```java 
 @Override
@@ -272,7 +272,7 @@ En conclusión, el método ```onCreateView``` queda definido así:
         this.getView().setVisibility(View.GONE);
     }
 ```  
-* Ahora dentro de esta clase crearemos la clase ```FileServerAsyncTask``` que como se dijo anteriormente se encarga de crear el server socket asociado al dispositivo servidor.
+* Ahora ***dentro de esta clase crearemos la clase*** ```FileServerAsyncTask``` que como se dijo anteriormente se encarga de crear el server socket asociado al dispositivo servidor.
 ```java 
 public static class FileServerAsyncTask extends AsyncTask<Void, Void, String> {
 
