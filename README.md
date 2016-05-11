@@ -13,12 +13,14 @@ public class Hello {
   }
 }
 ```
-###### Objetivo
+## Guía básica de Wifi-Direct
+###### Objetivo:
 Crear una aplicación android que permita enviar una imagen por medio de Wifi-Direct
 <br/>
--Crear un nuevo proyecto android con el nombre **Wifi-Direct**, mínimo SDK **API 16** y con el tipo de **actividad vacía** con nombre **WIFIDIRECTActivity**
+###### Tutorial:
+* Crear un nuevo proyecto android con el nombre **Wifi-Direct**, mínimo SDK **API 16** y con el tipo de **actividad vacía** con nombre **WIFIDIRECTActivity**
 
-## Guía básica:
+
 ####- Creación del BroadcastReceiver: <br/>
 Se crea una clase java con el nombre de WiFiDirectBroadcastReceiver que será un subclase de BroadcastReceiver, este componente esta destinado a recibir y responder a los siguientes eventos: <br/>
 * Activación o desactivación de Wi-Fi Direct <br/>
