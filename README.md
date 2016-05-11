@@ -804,7 +804,7 @@ public void clearPeers() {
 ```
 **Creación del WiFiDirectActivity:**<br/>
 Ya para concluir, se se crea la actividad principal que en general usa Wi-Fi Direct para descubir, conectar y transferir imagenes con dispositivos disponibles en la red.<br/>
-Inicalmente de declaran las variables globales con el método ```public void setIsWifiP2pEnabled(boolean isWifiP2pEnabled)``` se modifica el estado del Wi-FI por medio del ```WiFiDirectBroadcastReceiver``` además en el ```public void onCreate(Bundle savedInstanceState)``` se definen los tipos de intentos asociados a Wi-Fi Direct , que ya se han explicado previamente y se inicializa el objeto ```manager``` responsable de la gestión de la conectividad de Wi-Fi Direct.
+Inicalmente de declaran las variables globales.Después con el método ```public void setIsWifiP2pEnabled(boolean isWifiP2pEnabled)``` se modifica el estado del Wi-FI por medio del ```WiFiDirectBroadcastReceiver``` además en el ```public void onCreate(Bundle savedInstanceState)``` se definen los tipos de intentos asociados a Wi-Fi Direct , que ya se han explicado previamente y se inicializa el objeto ```WifiP2pManager manager``` responsable de la gestión de la conectividad de Wi-Fi Direct.
 ```java
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -866,7 +866,7 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
 ```
 
 * Ahora bien, cuando la actividad esta a punto de ser lanzada al usuario en el ```public void onResume()``` se crea una instancia del ```WiFiDirectBroadcastReceiver```para mantener la comunicación con la actividad principal y además se registra en el manifiesto el BroadcastReceiver con que tipo de ```Intent``` está asociado. <br/>
-Sin embargo, cuando la actividad se pausa en el ```public void onPause()``` el BroadcastReceiver se quita dle manifiesto.
+Sin embargo, cuando la actividad se pausa en el ```public void onPause()``` el BroadcastReceiver se quita del manifiesto.
 ```java
   @Override
     public void onResume() {
@@ -904,8 +904,8 @@ Sin embargo, cuando la actividad se pausa en el ```public void onPause()``` el B
     }
   ```
 * El método ```public boolean onOptionsItemSelected(MenuItem item) ``` se ejecuta cuando se selecciona una opción del menú:
-* Cuando se escoje la opción  **Settings**, solamente se llama a la **configuración de Conexiones inalambricas y redes** que tiene por defecto el sistema, para que el usuario pueda activar Wi-FI Direct.</br>
-* Cuando se escije la opción **Buscar** se verifica que Wi-FI Direct este activado, en tal caso  se utiliza el objeto ```WifiP2pManager manager``` para encontrar los peers disponibles en dicho momento.
+* Cuando se escoje la opción  **Settings**, se llama a la **configuración de conexiones inalambricas y redes** que tiene por defecto el dispositivo, para que el usuario pueda activar Wi-FI Direct.</br>
+* Cuando se escoje la opción **Buscar** se verifica que Wi-FI Direct este activado, en tal caso  se utiliza el objeto ```WifiP2pManager manager``` para encontrar los peers disponibles en dicho momento.
   
 ```java  
   @Override
@@ -953,3 +953,104 @@ Sin embargo, cuando la actividad se pausa en el ```public void onPause()``` el B
         }
     }
 ```
+* Ahora se pasa a la implementación de los métodos definidos por la interfaz ``` DeviceActionListener ```:<br/>
+* El método ```public void showDetails(WifiP2pDevice device)``` muestra la información de un dispositivo en un ```Fragment```.<br/> 
+* El método ```public void connect(WifiP2pConfig config)``` llama al objeto ```WifiP2pManager manager``` para empezar una conexión con un dispositivo de acuerdo a una configuración establecida.<br/> 
+* El método ```public void disconnect()``` elimina el grupo p2p actual y limpia el ```Fragment``` asociado al dispositivo con el que se estaba conectado.<br/> 
+* El método ```public void cancelDisconnect()``` cancela la conexión que apenas se estaba tratando de negociar entre dos dispositivos.
+  ```java 
+  @Override
+    public void showDetails(WifiP2pDevice device) {
+        DeviceDetailFragment fragment = (DeviceDetailFragment) getFragmentManager()
+                .findFragmentById(R.id.frag_detail);
+        fragment.showDetails(device);
+
+    }
+
+    @Override
+    public void connect(WifiP2pConfig config) {
+        manager.connect(channel, config, new ActionListener() {
+
+            @Override
+            public void onSuccess() {
+                // WiFiDirectBroadcastReceiver will notify us. Ignore for now.
+            }
+
+            @Override
+            public void onFailure(int reason) {
+                Toast.makeText(WiFiDirectActivity.this, "Connect failed. Retry.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void disconnect() {
+        final DeviceDetailFragment fragment = (DeviceDetailFragment) getFragmentManager()
+                .findFragmentById(R.id.frag_detail);
+        fragment.resetViews();
+        manager.removeGroup(channel, new ActionListener() {
+
+            @Override
+            public void onFailure(int reasonCode) {
+                Log.d(TAG, "Disconnect failed. Reason :" + reasonCode);
+
+            }
+
+            @Override
+            public void onSuccess() {
+                fragment.getView().setVisibility(View.GONE);
+            }
+
+        });
+    }
+  
+   @Override
+    public void cancelDisconnect() {
+        if (manager != null) {
+            final DeviceListFragment fragment = (DeviceListFragment) getFragmentManager()
+                    .findFragmentById(R.id.frag_list);
+            if (fragment.getDevice() == null
+                    || fragment.getDevice().status == WifiP2pDevice.CONNECTED) {
+                disconnect();
+            } else if (fragment.getDevice().status == WifiP2pDevice.AVAILABLE
+                    || fragment.getDevice().status == WifiP2pDevice.INVITED) {
+
+                manager.cancelConnect(channel, new ActionListener() {
+
+                    @Override
+                    public void onSuccess() {
+                        Toast.makeText(WiFiDirectActivity.this, "Aborting connection",
+                                Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(int reasonCode) {
+                        Toast.makeText(WiFiDirectActivity.this,
+                                "Connect abort request failed. Reason Code: " + reasonCode,
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
+
+    }
+```
+* Por último se implementa el método ```public void onChannelDisconnected()``` definido por la interfaz  ```ChannelListener``` que se lanza cuando el canal ha sido desconectado y lo que se busca es relanzar de nuevo el canal por medio del método ```initialize(Context, Looper, WifiP2pManager.ChannelListener)```.
+```java
+    @Override
+    public void onChannelDisconnected() {
+        // we will try once more
+        if (manager != null && !retryChannel) {
+            Toast.makeText(this, "Channel lost. Trying again", Toast.LENGTH_LONG).show();
+            resetData();
+            retryChannel = true;
+            manager.initialize(this, getMainLooper(), this);
+        } else {
+            Toast.makeText(this,
+                    "Severe! Channel is probably lost premanently. Try Disable/Re-Enable P2P.",
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+  ```
+}
