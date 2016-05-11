@@ -18,7 +18,7 @@ public class Hello {
 Crear una aplicación android que permita enviar una imagen por medio de Wifi-Direct
 <br/><br/>
 ###### Tutorial:
-* Crear un nuevo proyecto android con el nombre **Wifi-Direct**, mínimo SDK **API 16** y con el tipo de **actividad vacía** con nombre **WIFIDIRECTActivity**
+* Crear un nuevo proyecto android con el nombre **Wifi-Direct**, SDK mínimo **API 16** y con el tipo de **actividad vacía** con nombre **WiFiDirectActivity**
 
 
 ####- Creación del BroadcastReceiver: <br/>
