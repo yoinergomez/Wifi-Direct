@@ -17,7 +17,7 @@ public class Hello {
 ####- Creación del BroadcastReceiver: <br/>
 Se crea una clase java con el nombre de WiFiDirectBroadcastReceiver que será un subclase de BroadcastReceiver, este componente esta destinado a recibir y responder a los siguientes eventos: <br/>
 * Activación o desactivación de Wi-Fi Direct <br/>
-* La lista de dispositivos(peers) ha cambiado.<br/>
+* La lista de dispositivos(peers) disponibles ha cambiado.<br/>
 * El estado de la conectividad Wi-Fi Direct peer-to-peer ha cambiado.<br/>
 * La información del dispositivo ha cambiado.
 Esto se verá ahora con mayor detalle.
@@ -63,8 +63,6 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
         if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
-
-            // UI update to indicate wifi p2p status.
             int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
             if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
                 // Wifi Direct mode is enabled
@@ -76,10 +74,6 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
             }
             Log.d(WiFiDirectActivity.TAG, "P2P state changed - " + state);
         } else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
-
-            // request available peers from the wifi p2p manager. This is an
-            // asynchronous call and the calling activity is notified with a
-            // callback on PeerListListener.onPeersAvailable()
             if (manager != null) {
                 manager.requestPeers(channel, (PeerListListener) activity.getFragmentManager()
                         .findFragmentById(R.id.frag_list));
@@ -95,9 +89,6 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
                     .getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
 
             if (networkInfo.isConnected()) {
-
-                // we are connected with the other device, request connection
-                // info to find group owner IP
 
                 DeviceDetailFragment fragment = (DeviceDetailFragment) activity
                         .getFragmentManager().findFragmentById(R.id.frag_detail);
@@ -123,11 +114,9 @@ Se puede observar que la clase dispone de tres atributos:<br/>
 ```WiFiDirectActivity activity:``` Es la referencia a la actividad principal de la app, esto se hace con el objetivo de actualizar la actividad principal dependiendo las acciones que realice el BroadcastReceiver.<br/>
 
 El método ```onReceive(Context context, Intent intent)``` captuta la acción asociada al intento que invocó el BroadcastReceiver.<br/>
-Cuando se genera el evento Activación o desactivación de Wi-Fi Direct simplemente se actualiza ese estado a la atividada principal. <br/>
+Cuando se genera el evento Activación o desactivación de Wi-Fi Direct simplemente se actualiza ese estado a la actividad principal. <br/>
 ```java
 if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
-
-            // UI update to indicate wifi p2p status.
             int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
             if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
                 // Wifi Direct mode is enabled
@@ -143,10 +132,6 @@ if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
 Cuando la lista de dispositivos(peers) disponibles ha cambiado, se actualiza el objeto  ```manager``` con la lista actual de peers que se encuentran en un ```ListFragment```
 ```java
    else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
-
-            // request available peers from the wifi p2p manager. This is an
-            // asynchronous call and the calling activity is notified with a
-            // callback on PeerListListener.onPeersAvailable()
             if (manager != null) {
                 manager.requestPeers(channel, (PeerListListener) activity.getFragmentManager()
                         .findFragmentById(R.id.frag_list));
@@ -166,15 +151,11 @@ Cuando el estado de la conectividad del Wi-Fi Direct ha cambiado, se obtiene la 
                     .getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
 
             if (networkInfo.isConnected()) {
-
-                // we are connected with the other device, request connection
-                // info to find group owner IP
-
+            
                 DeviceDetailFragment fragment = (DeviceDetailFragment) activity
                         .getFragmentManager().findFragmentById(R.id.frag_detail);
                 manager.requestConnectionInfo(channel, fragment);
             } else {
-                // It's a disconnect
                 activity.resetData();
             }
   }
@@ -183,7 +164,7 @@ Cuando el estado de la conectividad del Wi-Fi Direct ha cambiado, se obtiene la 
 
 Por último, cuando la información de un dispositivo ha cambiado, se actualiza fragmento asociado a este dispositivo.
 ```java
-} else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
+ else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
             DeviceListFragment fragment = (DeviceListFragment) activity.getFragmentManager()
                     .findFragmentById(R.id.frag_list);
             fragment.updateThisDevice((WifiP2pDevice) intent.getParcelableExtra(
@@ -192,7 +173,7 @@ Por último, cuando la información de un dispositivo ha cambiado, se actualiza 
 
 ```
 #### Creación del DeviceDetailFragment: <br/>
-Se crea una clase java con el nombre DeviceDetailFragment que será una subclase de Fragment y además implmentará la interfaz ConnectionInfoListener, esto con el objetivo de conocer la información actual de la conexión establecida entre dos peers. El fragmento contienen la información detallada de un dispositivo que está vinculado a la red </br>
+Se crea una clase java con el nombre DeviceDetailFragment que será una subclase de Fragment y además implmentará la interfaz ```ConnectionInfoListener```, esto con el objetivo de conocer la información actual de la conexión establecida entre dos peers. El fragmento contiene la información detallada de un dispositivo que está vinculado a la red </br>
 La clase tendrá como variables globales:
 ```java
 import android.app.Fragment;
@@ -346,8 +327,6 @@ En conclusión, el método queda definido así:
 @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        // User has picked an image. Transfer it to group owner i.e peer using
-        // FileTransferService.
         Uri uri = data.getData();
         TextView statusText = (TextView) mContentView.findViewById(R.id.status_text);
         statusText.setText("Sending: " + uri);
@@ -377,10 +356,6 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
-/**
- * A service that process each file transfer request i.e Intent by opening a
- * socket connection with the WiFi Direct Group Owner and writing the file
- */
 public class FileTransferService extends IntentService {
 
     private static final int SOCKET_TIMEOUT = 5000;
@@ -468,21 +443,15 @@ public class FileTransferService extends IntentService {
         view = (TextView) mContentView.findViewById(R.id.device_info);
         view.setText("Group Owner IP - " + info.groupOwnerAddress.getHostAddress());
 
-        // After the group negotiation, we assign the group owner as the file
-        // server. The file server is single threaded, single connection server
-        // socket.
         if (info.groupFormed && info.isGroupOwner) {
             new FileServerAsyncTask(getActivity(), mContentView.findViewById(R.id.status_text))
                     .execute();
         } else if (info.groupFormed) {
-            // The other device acts as the client. In this case, we enable the
-            // get file button.
             mContentView.findViewById(R.id.btn_start_client).setVisibility(View.VISIBLE);
             ((TextView) mContentView.findViewById(R.id.status_text)).setText(getResources()
                     .getString(R.string.client_text));
         }
 
-        // hide the connect button
         mContentView.findViewById(R.id.btn_connect).setVisibility(View.GONE);
     }
     
@@ -683,7 +652,7 @@ public class DeviceListFragment extends ListFragment implements PeerListListener
         }
     }
 ```
-* Se sobreescribe el método ```public void onListItemClick(ListView l, View v, int position, long id)``` que provee la clase ```ListFragment```, este metodo se ejecuta cuando se selecciona un dispositivo de la lista de peers disponibles, cuando eso sucede se inicaliza la conexión entre el dispositivo del usuario y el dispositivo que escogió.
+* Se sobreescribe el método ```public void onListItemClick(ListView l, View v, int position, long id)``` que provee la clase ```ListFragment```, este metodo se ejecuta cuando se selecciona un dispositivo de la lista de peers disponibles, cuando eso sucede se inicializa la conexión entre el dispositivo del usuario y el dispositivo que escogió.
 
 ```java
 @Override
@@ -1052,5 +1021,6 @@ Sin embargo, cuando la actividad se pausa en el ```public void onPause()``` el B
                     Toast.LENGTH_LONG).show();
         }
     }
-  ```
 }
+ ```
+ 
