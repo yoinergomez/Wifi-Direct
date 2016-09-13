@@ -38,6 +38,8 @@ import android.widget.Toast;
 
 import com.example.android.wifidirect.DeviceListFragment.DeviceActionListener;
 
+import java.lang.reflect.Method;
+
 /**
  * An activity that uses WiFi Direct APIs to discover and connect with available
  * devices. WiFi Direct APIs are asynchronous and rely on callback mechanism
@@ -107,6 +109,22 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
         }
         if (fragmentDetails != null) {
             fragmentDetails.resetViews();
+        }
+    }
+
+    private void deletePersistentGroups(){
+        try {
+            Method[] methods = WifiP2pManager.class.getMethods();
+            for (int i = 0; i < methods.length; i++) {
+                if (methods[i].getName().equals("deletePersistentGroup")) {
+                    // Delete any persistent group
+                    for (int netid = 0; netid < 32; netid++) {
+                        methods[i].invoke(manager, channel, netid, null);
+                    }
+                }
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -197,16 +215,18 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
         final DeviceDetailFragment fragment = (DeviceDetailFragment) getFragmentManager()
                 .findFragmentById(R.id.frag_detail);
         fragment.resetViews();
+
         manager.removeGroup(channel, new ActionListener() {
 
             @Override
             public void onFailure(int reasonCode) {
                 Log.d(TAG, "Disconnect failed. Reason :" + reasonCode);
-
             }
 
             @Override
             public void onSuccess() {
+                Log.d("@@@","ELIMINARE LOS GRUPOS");
+                deletePersistentGroups();
                 fragment.getView().setVisibility(View.GONE);
             }
 
