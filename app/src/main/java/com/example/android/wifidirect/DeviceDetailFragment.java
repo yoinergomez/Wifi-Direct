@@ -72,6 +72,10 @@ public class DeviceDetailFragment extends Fragment implements ConnectionInfoList
             @Override
             public void onClick(View v) {
                 WifiP2pConfig config = new WifiP2pConfig();
+                Log.d("@@@ groupOwnerIntent",config.groupOwnerIntent+"");
+                config.groupOwnerIntent = 15;
+                Log.d("@@@ groupOwnerIntent2",config.groupOwnerIntent+"");
+
                 config.deviceAddress = device.deviceAddress;
                 config.wps.setup = WpsInfo.PBC;
                 if (progressDialog != null && progressDialog.isShowing()) {

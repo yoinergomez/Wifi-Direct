@@ -176,6 +176,7 @@ public class WiFiDirectActivity extends Activity implements ChannelListener, Dev
 
     @Override
     public void connect(WifiP2pConfig config) {
+        Log.d("@@@ groupOwnerIntent3",config.groupOwnerIntent+"");
         manager.connect(channel, config, new ActionListener() {
 
             @Override
