@@ -708,6 +708,7 @@ Sin embargo, cuando la actividad se pausa en el ```public void onPause()``` el B
         }
 
     }
+    
 ```
 * Por último se implementa el método ```public void onChannelDisconnected()``` definido por la interfaz  ```ChannelListener``` que se lanza cuando el canal ha sido desconectado y lo que se busca es relanzar de nuevo el canal por medio del método ```initialize(Context, Looper, WifiP2pManager.ChannelListener)```.
 ```java
